@@ -10,8 +10,9 @@ from src.visualize import save_distilled_grid
 
 CONFIG = {
     "num_per_class": 1,
-    "inner_lr_init": 0.1,
-    "outer_lr": 0.01,
+    "inner_lr_init": 0.02,
+    "outer_lr_x": 0.01,   
+    "outer_lr_lr": 0.001,  
     "inner_steps": 10,
     "num_steps": 2000,
     "batch_size": 256,

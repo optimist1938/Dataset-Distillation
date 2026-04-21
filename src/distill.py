@@ -46,7 +46,8 @@ def distill(model, train_loader, config: dict, device: torch.device):
     distilled_lr = torch.tensor(
         config["inner_lr_init"], dtype=torch.float32, device=device, requires_grad=True
     )
-    outer_opt = torch.optim.Adam([distilled_x, distilled_lr], lr=config["outer_lr"])
+    opt_x  = torch.optim.Adam([distilled_x],  lr=config["outer_lr_x"])
+    opt_lr = torch.optim.Adam([distilled_lr], lr=config["outer_lr_lr"])
     real_iter = iter(train_loader)
     for step in range(1, config["num_steps"] + 1):
         # Здесь сэмплируем параметры
@@ -69,9 +70,12 @@ def distill(model, train_loader, config: dict, device: torch.device):
 
         logits = functional_call(model, params, real_x)
         outer_loss = F.cross_entropy(logits, real_y)
-        outer_opt.zero_grad()
+        opt_x.zero_grad()
+        opt_lr.zero_grad()
         outer_loss.backward()
-        outer_opt.step()
+        torch.nn.utils.clip_grad_norm_([distilled_x], max_norm=1.0)
+        opt_x.step()
+        opt_lr.step()
         with torch.no_grad():
             distilled_lr.clamp_(min=1e-5)
         if step % (config["num_steps"] // 20) == 0:
