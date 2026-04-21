@@ -76,7 +76,7 @@ def distill(model, train_loader, config: dict, device: torch.device):
             distilled_lr.clamp_(min=1e-5)
         if step % config["num_steps"] // 20 == 0:
             print(
-                f" step {step:>5}/{config['num_steps']} | "
+                f"step{step:>5}/{config['num_steps']} | "
                 f"outer_loss={outer_loss.item():.4f} | "
                 f"learned_lr={distilled_lr.item():.5f}"
             )
