@@ -11,11 +11,12 @@ from src.visualize import save_distilled_grid
 CONFIG = {
     "num_per_class": 1,
     "inner_lr_init": 0.02,
-    "outer_lr_x": 0.01,   
-    "outer_lr_lr": 0.001,  
+    "outer_lr_x": 0.01,
+    "outer_lr_lr": 0.001,
     "inner_steps": 10,
     "num_steps": 2000,
     "batch_size": 256,
+    "init_mode": "fixed",  # "fixed" или "random"
 
     "eval_inner_steps": 10,
     "num_eval_trials": 10,

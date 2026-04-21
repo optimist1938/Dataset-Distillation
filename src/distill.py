@@ -48,14 +48,23 @@ def distill(model, train_loader, config: dict, device: torch.device):
     )
     opt_x  = torch.optim.Adam([distilled_x],  lr=config["outer_lr_x"])
     opt_lr = torch.optim.Adam([distilled_lr], lr=config["outer_lr_lr"])
+
+    # fixed init: сохраняем веса один раз до цикла
+    if config.get("init_mode", "random") == "fixed":
+        model.reset_parameters()
+        fixed_params = {name: p.detach().clone() for name, p in model.named_parameters()}
+
     real_iter = iter(train_loader)
     for step in range(1, config["num_steps"] + 1):
-        # Здесь сэмплируем параметры
-        model.reset_parameters()
-        params = {
-            name: p.detach().clone().requires_grad_(True)
-            for name, p in model.named_parameters()
-        }
+        # random init: новые веса на каждом шаге; fixed init: берём сохранённые
+        if config.get("init_mode", "random") == "fixed":
+            params = {name: p.clone().requires_grad_(True) for name, p in fixed_params.items()}
+        else:
+            model.reset_parameters()
+            params = {
+                name: p.detach().clone().requires_grad_(True)
+                for name, p in model.named_parameters()
+            }
         # Здесь делаем сколько-то шагов по дистилированном датасету
         for _ in range(config["inner_steps"]):
             params = _inner_step(model, params, distilled_x, distilled_y, distilled_lr)
