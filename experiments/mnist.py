@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 import torch
 import torchvision
 import torchvision.transforms as T
@@ -29,10 +28,10 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     transform = T.Compose([T.ToTensor(), T.Normalize((0.1307,), (0.3081,))])
     train_set = torchvision.datasets.MNIST(
-        os.path.join(ROOT, "data"), train=True, download=True, transform=transform
+        "/kaggle/working/data", train=True, download=True, transform=transform
     )
     test_set = torchvision.datasets.MNIST(
-        os.path.join(ROOT, "data"), train=False, download=True, transform=transform
+        "/kaggle/working/data", train=False, download=True, transform=transform
     )
     train_loader = torch.utils.data.DataLoader(
         train_set, batch_size=CONFIG["batch_size"], shuffle=True, num_workers=2
@@ -65,7 +64,7 @@ def main():
         lr=CONFIG["full_dataset_lr"],
     )
     print(f"Full dataset: {full_acc*100:.2f}%")
-    results_dir = os.path.join(ROOT, "results")
+    results_dir = "/kaggle/working/results"
     os.makedirs(results_dir, exist_ok=True)
     results = {
         "config": CONFIG,
